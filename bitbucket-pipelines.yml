@@ -1,0 +1,66 @@
+image: jdubois/jhipster-docker
+
+pipelines:
+  default:
+    - step:
+        script:
+          # build javaagent dependency - demo1.5
+          - pushd "demo1.5"
+          - mvn --batch-mode install
+          - popd
+
+          # build java agent
+          - pushd javaagent
+          - mvn --batch-mode package
+          - popd
+
+          # install web app dependencies
+          - pushd web
+          - npm install
+          # fix for `libsass` bindings not found
+          - npm rebuild node-sass
+          # build web app
+          - node_modules/gulp/bin/gulp.js build
+          # install phantomjs
+          - npm install -g phantomjs-prebuilt
+          # "run mocha tests"
+          - $(which phantomjs) node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js test/index.html
+          # build & publish production version of web app for public eye
+          - node_modules/gulp/bin/gulp.js --env production --target website build
+          - cp -rf release/website ../server/dist
+          # build production version of web app for plugin
+          - node_modules/gulp/bin/gulp.js --env production --target plugin build
+          - popd
+
+          # build documentation
+          - pushd docs
+          - wget https://bootstrap.pypa.io/ez_setup.py 
+          - python ez_setup.py install
+          - easy_install pip
+          - pip install Sphinx
+          - pip install sphinx_rtd_theme
+          - make html
+          - cp -rf build/html ../server/dist/docs
+          - cp -rf build/html ../web/release/plugin/docs
+          - popd
+
+          # install intellij core as maven dependency
+          - pushd /tmp
+          - sh "/opt/atlassian/bitbucketci/agent/build/intellij-plugin/install-idea"
+          - popd
+
+          # build intellij plugin
+          - pushd intellij-plugin
+          - mvn --batch-mode package
+          # publish intellij plugin with server app
+          - mkdir ../server/dist/updates
+          - cp target/v*/halik-intellij-plugin.zip ../server/dist/updates/
+          # clean up disk space / delete local maven dependencies
+          - rm -rf target/dependency
+          - popd
+ 
+          # create deployment package
+          - mkdir "s3-deployment"
+          - pushd server
+          - zip -r ../s3-deployment/${BITBUCKET_COMMIT}.zip .
+          - popd

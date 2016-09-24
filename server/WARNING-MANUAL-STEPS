@@ -1,0 +1,3 @@
+If load balancer needs to be ever configured, this is an unfortunate manual step:
+
+https://blog.jverkamp.com/2015/07/20/configuring-websockets-behind-an-aws-elb/

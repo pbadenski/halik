@@ -1,0 +1,11 @@
+#!/bin/bash
+wget --quiet https://download.jetbrains.com/idea/ideaIC-2016.1.3.tar.gz
+tar xf ideaIC-2016.1.3.tar.gz
+rm ideaIC-2016.1.3.tar.gz
+mv idea-IC* ideaIC
+tar czf ideaIC-2016.1.3.tar.gz ideaIC/*
+mvn $MVN_ARGS org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file  -Dfile=ideaIC-2016.1.3.tar.gz \
+                                                                              -DgroupId=org.jetbrains \
+                                                                              -DartifactId=org.jetbrains.intellij-ce \
+                                                                              -Dpackaging=tar.gz \
+                                                                              -Dversion=2016.1.3

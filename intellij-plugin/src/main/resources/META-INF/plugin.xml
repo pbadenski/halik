@@ -1,0 +1,57 @@
+<idea-plugin version="2">
+  <id>io.halik.intellij-plugin</id>
+  <name>Halik Early Access</name>
+  <version>0.2.4</version>
+  <vendor url="https://halik.io" email="info@halik.io">Pawel Badenski</vendor>
+  <description><![CDATA[
+      Time travelling debugger for JVM (Java, Kotlin, and Clojure) for the 21st century.
+      <br />
+      Check out our roadmap: http://trello.com/b/V1KuKHeE/halik-roadmap
+      <br />
+      Features:
+      <ul>
+        <li><b>Record program execution, explore at your own pace</b></li>
+        <li><b>Easily find when a method is called</b></li>
+        <li><b>Search for object modifications</b></li>
+        <li><b>Visualize watches graphically in a meaningful way</b></li>
+        <li><b>Keep track of your exploration using context-based comments</b></li>
+        <li><b>See how data is changed among multiple threads</b></li>
+      </ul>
+
+    ]]></description>
+
+  <change-notes><![CDATA[
+    <ul>
+      <li>Heatmap support for jsonview</li>
+      <li>Capture fields set through reflection</li>
+      <li>Recording performance improvements (up to 40% faster)</li>
+    </ul>
+    ]]>
+  </change-notes>
+
+  <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+  <idea-version since-build="133"/>
+
+  <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <extensions defaultExtensionNs="com.intellij">
+    <executor implementation="io.halik.intellij.runner.HalikExecutor" />
+    <programRunner id="HalikRunner" implementation="io.halik.intellij.runner.HalikRunner" order="last" />
+    <runConfigurationExtension implementation="io.halik.intellij.runner.RunConfigurationExtension" />
+  </extensions>
+
+  <application-components>
+    <component>
+      <implementation-class>io.halik.intellij.server.Server</implementation-class>
+    </component>
+  </application-components>
+
+  <project-components/>
+
+  <actions/>
+
+</idea-plugin>

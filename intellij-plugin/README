@@ -1,0 +1,3 @@
+# Running
+
+Before running the plugin link "dist" directory from "web" project to "webapp" directory inside intellij plugin folder.

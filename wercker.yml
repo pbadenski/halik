@@ -1,0 +1,101 @@
+box:
+  id: jdubois/jhipster-docker
+  tag: latest
+build:
+  steps:
+    - script:
+        name: "build javaagent dependency - test1.3"
+        cwd: "test1.3"
+        code: |
+          mvn --batch-mode -Dmaven.repo.local=${WERCKER_CACHE_DIR} install
+    - script:
+        name: "build bootclasspath dependency"
+        cwd: "bootclasspath"
+        code: |
+          mvn --batch-mode -Dmaven.repo.local=${WERCKER_CACHE_DIR} install
+    - script:
+        name: "build java agent"
+        cwd: javaagent
+        code: |
+          mvn --batch-mode -Dmaven.repo.local=${WERCKER_CACHE_DIR} package
+    - npm-install:
+        name: "install web app dependencies"
+        cwd: web
+    - script:
+        name: "fix for `libsass` bindings not found"
+        cwd: web
+        code: |
+          npm rebuild node-sass
+    - script:
+        name: "build web app"
+        cwd: web
+        code: |
+          node_modules/gulp/bin/gulp.js build
+    - npm-install:
+        name: "install phantomjs"
+        cwd: web
+        options: "-g phantomjs-prebuilt"
+    - script:
+        name: "run mocha tests"
+        cwd: web
+        code: |
+          $(which phantomjs) node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js test/index.html
+    - script:
+        name: "build & publish production version of web app for public eye"
+        cwd: web
+        code: |
+          node_modules/gulp/bin/gulp.js --env production --target website build
+          cp -rf release/website ../server/dist
+    - script:
+        name: "build production version of web app for plugin"
+        cwd: web
+        code: |
+          node_modules/gulp/bin/gulp.js --env production --target plugin build
+    - script:
+        name: "build documentation"
+        cwd: docs
+        code: |
+          wget https://bootstrap.pypa.io/ez_setup.py 
+          python ez_setup.py install
+          easy_install pip
+          pip install Sphinx
+          pip install sphinx_rtd_theme
+          make html
+          cp -rf build/html ../server/dist/docs
+          cp -rf build/html ../web/release/plugin/docs
+    - script:
+        name: "install intellij core as maven dependency"
+        cwd: /tmp
+        code: |
+          MVN_ARGS="-Dmaven.repo.local=${WERCKER_CACHE_DIR}" sh "$WERCKER_ROOT/intellij-plugin/install-idea"
+    - script:
+        name: "build intellij plugin"
+        cwd: intellij-plugin
+        code: |
+          mvn --batch-mode -Dmaven.repo.local=${WERCKER_CACHE_DIR} package
+    - script:
+        name: "publish intellij plugin with server app"
+        cwd: intellij-plugin
+        code: |
+          mkdir ../server/dist/updates
+          cp target/v*/halik-intellij-plugin.zip ../server/dist/updates/
+    - script:
+        name: "clean up disk space / delete local maven dependencies"
+        cwd: intellij-plugin
+        code: |
+          rm -rf target/dependency
+
+deploy:
+  steps:
+    - script:
+        name: "create deployment package"
+        code: |
+          mkdir wercker-deployment
+          cd server
+          zip -r ../wercker-deployment/${WERCKER_GIT_COMMIT}.zip .
+    - s3sync:
+        source_dir: wercker-deployment
+        delete-removed: false
+        bucket-url: $AWS_BUCKET_URL
+        key-id: $AWS_ACCESS_KEY_ID
+        key-secret: $AWS_SECRET_ACCESS_KEY

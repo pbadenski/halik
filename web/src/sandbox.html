@@ -1,0 +1,68 @@
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.13.1/lodash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.4/iframeResizer.contentWindow.min.js"></script>
+  <script src="/assets/json.human.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="/assets/css/json.human.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.css">
+  <script>
+    var id;
+
+    var renderer = undefined;
+    var brokenRebuildOnNextAttempt = false;
+    var context = undefined;
+    var rebuildIfNeccessary = function (value) {
+      if (brokenRebuildOnNextAttempt) {
+        try {
+          context = renderer.setup(document.getElementById("contents"), value)
+        } catch (err) {
+          brokenRebuildOnNextAttempt = true;
+          console.error(err.stack);
+        }
+        brokenRebuildOnNextAttempt = false;
+      }
+    };
+    var onMessage = function (message) {
+      if (message.data.startsWith("[iFrameSizer]")) {
+        return;
+      }
+      var data = JSON.parse(message.data);
+      if (data.command === "id") {
+        id = data.value;
+      } else if (data.command === "code") {
+        renderer = eval("f = function () { " + data.value + " } ")()
+      } else if (data.command === "setup") {
+        try {
+          context = renderer.setup(document.getElementById("contents"), data.value)
+        } catch (err) {
+          brokenRebuildOnNextAttempt = true;
+          $(document.getElementById("contents")).empty().append($("<div />").append(document.createTextNode(err)));
+          console.error(err.stack);
+        }
+      } else if (data.command === "render") {
+          try {
+            rebuildIfNeccessary(data.value);
+            renderer.render(document.getElementById("contents"), data.value, context)
+          } catch (err) {
+            brokenRebuildOnNextAttempt = true;
+            $(document.getElementById("contents")).empty().append($("<div />").append(document.createTextNode(err)));
+            console.error(err.stack);
+          }
+      }
+    };
+    if (window.addEventListener) {
+      window.addEventListener("message", onMessage, false);
+    }
+    else {
+      window.attachEvent("onmessage", onMessage);
+    }
+  </script>
+</head>
+<body>
+  <div id="contents"></div>
+</body>

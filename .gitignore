@@ -1,0 +1,17 @@
+.idea
+*.iml
+*.ipr
+*.iws
+*.class
+target
+*.swp
+web/fonts/*.woff*
+.sass-cache
+out/
+.DS_Store
+_projects/
+_cache/
+_builds/
+_steps/
+node_modules/
+.settings

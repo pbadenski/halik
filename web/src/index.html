@@ -1,0 +1,192 @@
+<!-- Copyright (c) 2015-2016 Pawel Badenski -->
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex" />
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,700|Lobster' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/assets/css/all.css">
+  <!-- @ifdef PRODUCTION -->
+  <script>
+      (function(_,e,rr,s){_errs=[s];var c=_.onerror;_.onerror=function(){var a=arguments;_errs.push(a);
+      c&&c.apply(this,a)};var b=function(){var c=e.createElement(rr),b=e.getElementsByTagName(rr)[0];
+      c.src="//beacon.errorception.com/"+s+".js";c.async=!0;b.parentNode.insertBefore(c,b)};
+      _.addEventListener?_.addEventListener("load",b,!1):_.attachEvent("onload",b)})
+      (window,document,"script","5741bf3c18ab2cb209000033");
+  </script>
+  <!-- @endif -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    <!-- @ifdef PRODUCTION -->
+    ga('create', 'UA-77359696-1', 'auto');
+    <!-- @endif -->
+    <!-- @ifdef DEVELOPMENT -->
+    ga('create', 'UA-77359696-4', 'auto');
+    <!-- @endif -->
+    ga('send', 'pageview');
+  </script>
+
+  <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
+  <script type="text/javascript">
+    window.cookieconsent_options = {"message":"This website uses cookies to ensure you get the best experience on our website","dismiss":"Got it!","learnMore":"More info","link":"/privacy-policy.html","theme":"dark-top"};
+  </script>
+
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/1.0.9/cookieconsent.min.js"></script>
+  <!-- End Cookie Consent plugin -->
+  <!-- @ifdef WEBSITE -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- @endif -->
+  <script src="/assets/main.bundle.js" defer></script>
+</head>
+<body id="explorer">
+  <div class="off-canvas-wrapper">
+    <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
+      <div class="off-canvas position-right" data-off-canvas>
+        <h4>Comments</h4>
+        <div class="annotations"></div>
+      </div>
+      <div class="off-canvas-content" data-off-canvas-content>
+        <div class="top-bar">
+          <div class="top-bar-left">
+            <ul class="menu">
+              <li class="menu-logo divider-right">
+                <a style="padding: 0; line-height: inherit" href="<!-- @echo HOME_URL -->">Halik <span class="menu-logo-beta" style="">BETA</span></a>
+              </li>
+              <li class="threads">
+                <select>
+                </select>
+              </li>
+              <li class="quick-navigation menu-text" style="display: none">
+                <ul class="dropdown menu" data-dropdown-menu data-clickOpen="false">
+                  <li>
+                    <a href="#">Quick navigation</a>
+                    <ul class="menu list">
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            <ul>
+          </div>
+          <div class="top-bar-right">
+              <ul class="menu">
+                <li class="search find-occurrences" style="padding-right: 1rem">
+                  <input id="find-occurrences-search" type="text" placeholder="Find occurrences..."></input>
+                  <div style="z-index: 1">
+                    Search for: <br />
+                    - $&lt;expression&gt; - filtered values (eg. $i &lt;= 5 or $enumVar == 'ACTIVE') <br />
+                    - everything else - method calls (eg. validate)
+                  </div>
+                </li>
+                <li class="toggle-annotations"><i class="menu-item fa fa-comments fa-1_5x"></i></li>
+                <!-- @ifdef WEBSITE -->
+                <li class="permalink"><i class="menu-item fa fa-link fa-1_5x"></i></li>
+                <!-- @endif -->
+                <!-- @ifdef PLUGIN -->
+                <li class="share-session"><i class="menu-item fa fa-share-alt fa-1_5x"></i></li>
+                <!-- @endif -->
+                <li class="help"><a style='padding: 0' href='/docs/index.html' target='_blank'><i class="menu-item fa fa-question-circle fa-1_5x"></i></a></li>
+                <!-- @ifdef WEBSITE -->
+                <li class="sign-in"></li>
+                <!-- @endif -->
+              </ul>
+          </div>
+        </div>
+        <div class="row main" style="min-height: 650px">
+          <div class="large-3 columns frames-panel">
+            <div>
+              <h4>Frames</h4>
+              <div class="stack-trace">
+              </div>
+            </div>
+          </div>
+          <div class="large-6 columns timelines-panel divider-left divider-right" style="padding-bottom: 1rem">
+            <div>
+              <div>
+                <h4 style="display: inline">Timeline</h4>
+                <small class="step-counter" style="float: right; margin-top: 1rem; margin-right: 0.5rem; color: #969696; font-weight: bold"></small>
+                <div class="slider-container">
+                  <input id="slider" class="slider mousetrap" style="width: 100%" type="range" min="0" value="0" />
+                </div>
+              <div class="timelines">
+                <div class="keyboard-tip">
+                  <span style="font-weight: bold">Tip:</span><span> Use keyboard navigation!</span>
+                  <br />
+                  <span class="kbd">k</span> Step over
+                  <span class="kbd">i</span> Step back
+                  <span class="kbd">l</span> Step into
+                  <span class="kbd">j</span> Step out
+                </div>
+              </div>
+              </div>
+              <div class="row collapse">
+                <div class="large-12 columns" style="padding-right: 0px">
+                  <div class="editor"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="large-3 columns watches-panel">
+            <div>
+              <h4>Watches<i class="fa fa-warning watches-warning" style="display: none" data-tooltip title="Some changes (collections and maps) were not recorded. Check 'Recording' section in the documentation for details."></i></h4>
+              <div class="watches"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="large-5 large-centered text-center columns">
+            <small><a href="/privacy-policy.html">Privacy policy</a></small> 
+            <small> | </small>
+            <small><a href="/terms-of-service.html">Terms of service</a></small>
+            <small> | </small>
+            <small><a href="https://trello.com/b/V1KuKHeE/halik-roadmap">Roadmap</a></small>
+            <small> | </small>
+            <small><a href="https://github.com/pbadenski/halik">Report issues</a></small>
+            <small> | </small>
+            <small><a href="mailto:info@halik.io">Contact us</a></small>
+          </div>
+        </div>
+        <div class="row last">
+          <div class="large-5 large-centered text-center columns">
+            <small>© Pawel Badenski 2015-2016. All rights reserved.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='reveal large' style='border-radius: 8px; height: 85%' id='customVisualisationEditor' data-reveal>
+    <br style='clear: both' />
+    <div class="row">
+      <div class="large-1 columns">
+        <label style="font-size: 150%">Title:</label>
+      </div>
+      <div class="large-5 columns end">
+        <input type="text" class="title"></input>
+      </div>
+    </div>
+    <div class="row">
+      <div class="large-6 columns" style="font-weight: bold;">
+        Available libraries: <a href="https://d3js.org/">d3</a>, <a href="http://c3js.org/">c3</a>, <a href="http://visjs.org/">vis.js</a>, <a href="http://api.jquery.com/">jQuery</a>, <a href="https://lodash.com/">lodash</a>, and <a href="http://marianoguerra.github.io/json.human.js/">json.human.js</a>.
+      </div>
+    </div>
+    <div class="row" style='height: 70%'>
+      <div class="large-6 columns">
+        <div class='code' style="border: 1px #dedede solid"></div>
+      </div>
+      <div class="large-6 columns">
+        <div class='preview' style="border: 1px #dedede solid"></div>
+      </div>
+    </div>
+    <div class="row" style="position: absolute; bottom: 0">
+      <a class='run button'>Run</a>
+      <a class='save button'>Save &amp; close</a>
+    </div>
+    <button class='close-button' data-close aria-label='Close modal' type='button'>
+      <span aria-hidden='true'>&times;</span>
+    </button>
+  </div>
+</body>
+</html>

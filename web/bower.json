@@ -1,0 +1,27 @@
+{
+  "name": "halik-web",
+  "version": "0.0.0",
+  "authors": [
+    "Pawel Badenski"
+  ],
+  "license": "closed source",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "fontawesome": "~4.5.0"
+  },
+  "overrides": {
+    "fontawesome": {
+      "main": [
+        "css/font-awesome.css",
+        "fonts/fontawesome-webfont.woff",
+        "fonts/fontawesome-webfont.woff2"
+      ]
+    }
+  }
+}
