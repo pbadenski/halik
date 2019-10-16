@@ -1,6 +1,9 @@
 > # *If I had asked people what they wanted, they would have said faster horses.* #
 > ***Henry Ford***
 
+Intro: https://vimeo.com/165758772
+
+More videos: https://vimeo.com/channels/halik
 
 # Install
 
