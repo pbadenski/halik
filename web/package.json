@@ -61,7 +61,7 @@
     "htmlhint": "^0.9.13",
     "iframe-resizer": "^3.5.4",
     "jexl": "^1.1.4",
-    "jquery": "^2.2.4",
+    "jquery": "^3.4.1",
     "jquery-jsonview": "https://github.com/pbadenski/jquery-jsonview.git#master",
     "jquery-nearest": "^1.4.0",
     "jquery.scrollto": "^2.1.2",
